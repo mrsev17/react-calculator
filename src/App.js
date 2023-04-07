@@ -5,8 +5,8 @@ import { useState } from "react";
 function App() {
     const [value, setValue] = useState({
         value: 0,
+        secondValue: null,
         action: null,
-        secondValue: 0,
         equal: false,
         final: null,
         calculate: 0,
@@ -14,74 +14,87 @@ function App() {
 
     const numberHandle = (e) => {
         const num = e.target.innerHTML;
-        if (value.action === null) {
-            if (value.value === 0) {
-                setValue({ ...value, value: +num });
-            } else {
-                const updateVal = +(value.value + "" + num);
-                setValue({ ...value, value: updateVal });
-            }
-        }
-        if (value.action !== null) {
-            if (value.secondValue === 0) {
-                setValue({ ...value, secondValue: +num });
-            } else {
-                const updateVal = +(value.secondValue + "" + num);
-                setValue({ ...value, secondValue: updateVal });
-            }
+        if (value.value === 0) {
+            setValue({ ...value, value: +num });
+        } else {
+            const startVal = value.value;
+
+            const updateVal = +(startVal + num);
+            setValue({ ...value, value: updateVal });
         }
     };
 
     const actionHandle = (e) => {
         const action = e.target.innerHTML;
-        if (action === "+") {
+
+        if (action === "+" || value.equal === true) {
             setValue({
                 ...value,
                 action: "+",
-                calculate: value.value,
-                value: "+",
+                final: value.final + value.value,
+                value: 0,
             });
         }
-        if (action === "=") {
-            const calculateData = +value.calculate + +value.secondValue;
-            console.log(value.value);
-            console.log(value.secondValue);
-            setValue({ ...value, final: calculateData });
+
+        if (
+            action === "=" &&
+            value.secondValue === null &&
+            value.action === "+"
+        ) {
+            setValue({
+                ...value,
+                secondValue: value.value,
+                equal: true,
+                final: value.final + value.value,
+                value: value.final + value.value,
+            });
+        } else if (
+            action === "=" &&
+            value.secondValue !== null &&
+            value.action === "+"
+        ) {
+            const newValue = value.final + value.secondValue;
+            const convNewValue = parseFloat(newValue.toFixed(2));
+            console.log(newValue);
+            setValue({
+                ...value,
+                value: convNewValue,
+                final: parseFloat((value.final + value.secondValue).toFixed(2)),
+            });
         }
     };
 
-    // const numberHandle = (e) => {
-    //     const num = e.target.innerHTML;
-    //     if (value.value === 0 || value === "+") {
-    //         setValue(+num);
-    //     } else {
-    //         const newValue = +(value + "" + num);
-    //         setValue(newValue);
-    //     }
-    // };
-    // const actionHandle = (e) => {
-    //     const action = e.target.innerHTML;
-    //     if (action === "+") {
-    //         setValue("+");
-    //     }
-    //     if (action === "=") {
+    const comaHandle = () => {
+        if (value.value % 1 === 0) {
+            setValue({ ...value, value: value.value + "." });
+        }
+    };
 
-    //     }
-    // };
     return (
         <div className="App">
             <div className="calculator__main-frame d-flex flex-column gap-3 animation">
                 <div className="calculator__screen">
                     <h3>
-                        {value.action === null
-                            ? value.value
-                            : value.secondValue}
+                        {value.equal
+                            ? parseFloat(value.final.toFixed(2))
+                            : value.value}
                     </h3>
                 </div>
                 <div className="calculator__func-panel d-flex justify-content-between">
                     <div>
                         <button
-                            onClick={() => setValue({ ...value, value: 0 })}
+                            onClick={() =>
+                                setValue({
+                                    ...value,
+                                    value: 0,
+                                    action: null,
+                                    final: null,
+                                    calculate: 0,
+                                    equal: false,
+
+                                    secondValue: null,
+                                })
+                            }
                             className="calculator__func-button"
                         >
                             AC
@@ -123,7 +136,12 @@ function App() {
                         </button>
                     </div>
                     <div>
-                        <button className="calculator__func-button">X</button>
+                        <button
+                            onClick={(e) => actionHandle(e)}
+                            className="calculator__func-button"
+                        >
+                            X
+                        </button>
                     </div>
                 </div>
                 <div className="calculator__func-panel d-flex justify-content-between">
@@ -199,7 +217,12 @@ function App() {
                         </button>
                     </div>
                     <div>
-                        <button className="calculator__func-button">,</button>
+                        <button
+                            onClick={comaHandle}
+                            className="calculator__func-button"
+                        >
+                            ,
+                        </button>
                     </div>
                     <div>
                         <button

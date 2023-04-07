@@ -47,6 +47,7 @@ body {
     line-height: 1.5;
     scroll-behavior: smooth;
     text-rendering: optimizespeed;
+    background-color: rgb(29, 29, 29);
 }
 
 ul[class],
@@ -94,19 +95,22 @@ body {
     .animation {
         animation-name: slideInDown;
         animation-duration: 2s;
+        animation-timing-function: ease-out;
         animation-fill-mode: forwards;
-        visibility: hidden;
+        opacity: 0;
     }
+
     @keyframes slideInDown {
         0% {
-            transform: translateY(-100%);
-            visibility: visible;
+            transform: translate3d(0, -100%, 0);
+            opacity: 0;
         }
         100% {
-            transform: translateY(0);
-            visibility: visible;
+            transform: translate3d(0, 0, 0);
+            opacity: 1;
         }
     }
+
     .calculator__main-frame {
         text-align: center;
         max-width: 440px;
@@ -169,5 +173,25 @@ body {
     }
     .calculator__func-panel-bottom {
         margin-bottom: 28px;
+    }
+}
+
+@media (max-width: 380px) {
+    .App {
+        .calculator__main-frame {
+            .calculator__screen {
+                h3 {
+                    font-size: 34px;
+                }
+            }
+        }
+        .calculator__func-panel {
+            .calculator__func-button {
+                width: 72px;
+            }
+            .calculator__func-button-zero {
+                width: 156px;
+            }
+        }
     }
 }
